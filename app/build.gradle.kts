@@ -62,6 +62,10 @@ dependencies {
     implementation ("com.google.firebase:firebase-core:21.1.1")
 
     implementation ("com.airbnb.android:lottie:4.1.0")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+
+
 
 
 }

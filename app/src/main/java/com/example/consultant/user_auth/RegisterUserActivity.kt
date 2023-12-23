@@ -3,6 +3,7 @@ package com.example.consultant.user_auth
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import com.example.consultant.R
@@ -35,6 +36,7 @@ class RegisterUserActivity : AppCompatActivity() {
         }
 
         binding.btnRegister.setOnClickListener {
+
 
             val firstName = binding.etFirstName.text.toString()
             val lastName = binding.etLastName.text.toString()
@@ -77,7 +79,6 @@ class RegisterUserActivity : AppCompatActivity() {
                         "first_name" to firstName,
                         "last_name" to lastName,
                         "email" to email,
-                        "password" to password,
                         "gender" to genderRole,
                         "profession" to professionRole
                     )
@@ -102,12 +103,13 @@ class RegisterUserActivity : AppCompatActivity() {
                             Toast.makeText(applicationContext, "Failed to add user info.", Toast.LENGTH_SHORT).show()
                         }
                 } else {
-                   // loader.dialogDismiss()
-                    // If user account creation fails, show an error message
-                    Toast.makeText(applicationContext, "User already register.", Toast.LENGTH_SHORT).show()
+                    val exception = task.exception
+                    Log.e("FirebaseAuth", "Error: ${exception?.message}")
+                    Toast.makeText(applicationContext, "Error: ${exception?.message}", Toast.LENGTH_SHORT).show()
+                }
                 }
             }
-    }
+
 
 
 
