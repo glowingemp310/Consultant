@@ -21,6 +21,8 @@ import com.example.consultant.consultee_activities.ConsultantDetailActivity
 import com.example.consultant.databinding.FragmentConsulteeHomeBinding
 import com.example.consultant.model_classes_consultee.ModelHomeConsulteeBottom
 import com.example.consultant.model_classes_consultee.ModelHomeConsulteeTop
+import com.example.consultant.user_auth.LoginActivity
+import com.example.consultant.utils.SharedPreference
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ConsulteeHomeFragment : Fragment() {
@@ -59,6 +61,15 @@ class ConsulteeHomeFragment : Fragment() {
         binding?.topbarHome?.ivImageLeft?.setOnClickListener {
             binding?.homeDrawer?.openDrawer(GravityCompat.START)
         }
+
+        binding?.tvLogout?.setOnClickListener {
+            SharedPreference.shared.clear()
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            startActivity(intent)
+            activity?.finishAffinity()
+        }
+
+
     }
 
     private fun setupTopConsultant() {
@@ -146,15 +157,18 @@ class ConsulteeHomeFragment : Fragment() {
 
         adapter = AdapterHomeConsulteeTop(showList, object : OnItemClick {
             override fun onClick(position: Int, type: String?, data: Any?) {
+                if (showList.isNotEmpty() && position < showList.size) {
+                    val consultant = showList[position]
 
-                val intent = Intent(context, ConsultantDetailActivity::class.java)
-
-                startActivity(intent)
+                    val intent = Intent(requireContext(), ConsultantDetailActivity::class.java)
+                    intent.putExtra("consultantObj", consultant)
+                    startActivity(intent)
+                }
             }
         })
 
 
-        binding?.rvConsultantTop?.adapter = adapter
+       // binding?.rvConsultantTop?.adapter = adapter
 
 
     }
@@ -167,7 +181,7 @@ class ConsulteeHomeFragment : Fragment() {
 
     private fun initTopBar() {
         binding?.topbarHome?.tvTopBarContent?.setText("Home")
-        binding?.topbarHome?.ivImageLeft?.visibility=View.GONE
+        binding?.topbarHome?.ivImageLeft?.setImageDrawable(resources.getDrawable(R.drawable.menu))
 
     }
 

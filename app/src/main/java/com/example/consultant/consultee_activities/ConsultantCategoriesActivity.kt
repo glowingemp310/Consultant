@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.bumptech.glide.Glide
 import com.example.consultant.OnItemClick
 import com.example.consultant.R
 import com.example.consultant.adapter_classes_consultee.AdapterConsultantCategories

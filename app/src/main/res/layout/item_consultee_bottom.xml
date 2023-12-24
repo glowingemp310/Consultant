@@ -10,7 +10,8 @@
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="10dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/d5"
@@ -18,10 +19,8 @@
         android:layout_height="70dp"
         android:layout_rowWeight="0"
         android:layout_columnWeight="0"
-        android:layout_margin="10dp"
         app:cardCornerRadius="200dp"
         app:cardElevation="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -46,12 +45,14 @@
         android:id="@+id/tvOccupation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="akdjfklad"
+        android:visibility="invisible"
         android:layout_gravity="center"
+        android:gravity="center_vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:textColor="@color/white"
         android:fontFamily="@font/poppins"
+        android:layout_marginHorizontal="20dp"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@+id/d5" />
 

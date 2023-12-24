@@ -13,6 +13,8 @@ import androidx.databinding.DataBindingUtil
 import com.example.consultant.R
 import com.example.consultant.consultant_activities.RegisterClinicActivity
 import com.example.consultant.databinding.FragmentConsultantHomeBinding
+import com.example.consultant.user_auth.LoginActivity
+import com.example.consultant.utils.SharedPreference
 
 
 class ConsultantHomeFragment : Fragment() {
@@ -45,6 +47,13 @@ class ConsultantHomeFragment : Fragment() {
         binding?.tvRegisterClinic?.setOnClickListener {
             val intent= Intent(requireContext(), RegisterClinicActivity::class.java)
             startActivity(intent)
+        }
+
+        binding?.tvLogout?.setOnClickListener {
+            SharedPreference.shared.clear()
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            startActivity(intent)
+            activity?.finishAffinity()
         }
     }
 

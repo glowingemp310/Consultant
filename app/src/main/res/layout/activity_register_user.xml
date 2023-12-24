@@ -42,7 +42,7 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/bg_edittext"
                 android:fontFamily="@font/poppins"
-                android:hint="First name"
+                android:hint="Full name"
                 android:inputType="textPersonName"
                 android:padding="12dp"
                 android:textColor="@color/white"

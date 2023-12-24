@@ -33,7 +33,7 @@ class AdapterConsultantCategories(var showData: MutableList<ModelHomeConsulteeTo
     override fun onBindViewHolder(holder: AdapterConsultantCategories.ViewHolder, position: Int) {
         val consultantCategories = showData[position]
         holder.binding.model = consultantCategories
-        //holder.binding.ivConsultantImage.setImageResource(showData[position].icon)
+        Glide.with(binding.ivConsultantImage).load(consultantCategories.consultantImage).into(binding.ivConsultantImage)
         holder.binding.tvConsultantName.text = consultantCategories.consultantName
         holder.binding.tvConsultantOccupation.text = consultantCategories.occupation
 

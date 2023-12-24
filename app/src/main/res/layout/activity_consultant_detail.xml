@@ -289,19 +289,6 @@
             </LinearLayout>
 
 
-            <ImageView
-                android:id="@+id/ivConsultantDocument"
-                android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="20dp"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/img"
-                app:layout_constraintTop_toBottomOf="@+id/llConsultantTiming"
-                tools:layout_editor_absoluteX="20dp" />
-
-
             <Button
                 android:id="@+id/btnBooking"
                 android:layout_width="match_parent"
@@ -316,7 +303,7 @@
                 android:textSize="18sp"
                 android:layout_marginTop="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivConsultantDocument"
+                app:layout_constraintTop_toBottomOf="@+id/llConsultantTiming"
                 tools:layout_editor_absoluteX="20dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
