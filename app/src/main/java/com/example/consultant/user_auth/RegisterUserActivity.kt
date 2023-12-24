@@ -38,8 +38,7 @@ class RegisterUserActivity : AppCompatActivity() {
         binding.btnRegister.setOnClickListener {
 
 
-            val firstName = binding.etFirstName.text.toString()
-            val lastName = binding.etLastName.text.toString()
+            val fullName = binding.etFullName.text.toString()
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
             val genderRole = when (binding.radioGroupGender.checkedRadioButtonId) {
@@ -59,7 +58,7 @@ class RegisterUserActivity : AppCompatActivity() {
 
             if(isAllFieldChecked)
             {
-                createUser(firstName,lastName,email,password,genderRole,professionRole)
+                createUser(fullName,email,password,genderRole,professionRole)
             }
 
 
@@ -67,7 +66,7 @@ class RegisterUserActivity : AppCompatActivity() {
     }
 
 
-    private fun createUser(firstName:String,lastName:String, email:String, password:String, genderRole:String, professionRole:String)
+    private fun createUser(fullName:String, email:String, password:String, genderRole:String, professionRole:String)
     {
 
         // If user does not exist, create a new user account with Firebase Authentication
@@ -76,8 +75,7 @@ class RegisterUserActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // If user account creation is successful, add user info to Firestore
                     val user = hashMapOf(
-                        "first_name" to firstName,
-                        "last_name" to lastName,
+                        "full name" to fullName,
                         "email" to email,
                         "gender" to genderRole,
                         "profession" to professionRole
@@ -121,15 +119,11 @@ class RegisterUserActivity : AppCompatActivity() {
 
     private fun checkAllFields():Boolean
     {
-        if(binding.etFirstName.text.isNullOrEmpty())
+        if(binding.etFullName.text.isNullOrEmpty())
         {
-            binding.etFirstName.error="First name field is empty"
+            binding.etFullName.error="Name should not be empty"
         }
 
-        if(binding.etLastName.text.isNullOrEmpty())
-        {
-            binding.etLastName.error="Last name field is empty"
-        }
 
         if ( !binding.etEmail.text.toString().matches(Patterns.EMAIL_ADDRESS.toRegex()))
         {

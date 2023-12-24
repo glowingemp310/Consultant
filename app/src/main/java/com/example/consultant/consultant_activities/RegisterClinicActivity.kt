@@ -54,19 +54,23 @@ class RegisterClinicActivity : AppCompatActivity() {
     }
 
     private fun onClick() {
-        binding?.btnOpenTimeSelect?.setOnClickListener {
+        binding.btnOpenTimeSelect?.setOnClickListener {
             openTimeSet=true
             shopOpenTime()
 
         }
 
 
-        binding?.btnCloseTimeSelect?.setOnClickListener {
+        binding.btnCloseTimeSelect.setOnClickListener {
             closeTimeSet=true
             shopCloseTime()
         }
 
-        binding?.ivConsultantImage?.setOnClickListener {
+        binding.ivConsultantImage.setOnClickListener {
+            choosePhotoOptions()
+        }
+
+        binding.ivPostUpload?.setOnClickListener {
             choosePhotoOptions()
         }
 

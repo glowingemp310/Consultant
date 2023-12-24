@@ -1,5 +1,6 @@
 package com.example.consultant.consultee_fragments
 
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
@@ -8,25 +9,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.startActivity
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.consultant.OnItemClick
 import com.example.consultant.R
 import com.example.consultant.adapter_classes_consultee.AdapterHomeConsulteeBottom
 import com.example.consultant.adapter_classes_consultee.AdapterHomeConsulteeTop
+import com.example.consultant.consultee_activities.ConsultantCategoriesActivity
 import com.example.consultant.consultee_activities.ConsultantDetailActivity
-import com.example.consultant.databinding.FragmentConsultantHomeBinding
 import com.example.consultant.databinding.FragmentConsulteeHomeBinding
 import com.example.consultant.model_classes_consultee.ModelHomeConsulteeBottom
 import com.example.consultant.model_classes_consultee.ModelHomeConsulteeTop
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.HashMap
 
 class ConsulteeHomeFragment : Fragment() {
     var binding: FragmentConsulteeHomeBinding?=null
     val showList = ArrayList<ModelHomeConsulteeTop>()
     val showCategories = ArrayList<ModelHomeConsulteeBottom>()
+    lateinit var DrawerToggle: ActionBarDrawerToggle
+
 
 
     lateinit var adapter: AdapterHomeConsulteeTop
@@ -46,7 +48,17 @@ class ConsulteeHomeFragment : Fragment() {
         initAdapter()
         setupTopConsultant()
         showCategories()
+        initDrawer()
+        onClick()
+        initTopBar()
 
+
+    }
+
+    private fun onClick() {
+        binding?.topbarHome?.ivImageLeft?.setOnClickListener {
+            binding?.homeDrawer?.openDrawer(GravityCompat.START)
+        }
     }
 
     private fun setupTopConsultant() {
@@ -61,7 +73,7 @@ class ConsulteeHomeFragment : Fragment() {
                 val consultantImage = document.getString("image") ?: ""
                 val consultantName = document.getString("Consultant Name") ?: ""
                 val clinicName = document.getString("Clinic Name") ?: ""
-                val phoneNo = document.getString("Phone No") ?: ""
+                val phoneNo = document.getString("Phone no") ?: ""
                 val about = document.getString("About") ?: ""
                 val address = document.getString("Address") ?: ""
                 val cnic = document.getString("Cnic") ?: ""
@@ -98,15 +110,15 @@ class ConsulteeHomeFragment : Fragment() {
 
     private fun showCategories()
     {
-        showCategories.add((ModelHomeConsulteeBottom(R.drawable.img_2,"Heart Specialist")))
-        showCategories.add((ModelHomeConsulteeBottom(R.drawable.img_3,"Dentist")))
-        showCategories.add((ModelHomeConsulteeBottom(R.drawable.endocrinology,"Endocrinologist")))
-        showCategories.add((ModelHomeConsulteeBottom(R.drawable.family_physicians,"Family Physicians")))
-        showCategories.add((ModelHomeConsulteeBottom(R.drawable.img_4,"Eye Specialist")))
-        showCategories.add((ModelHomeConsulteeBottom(R.drawable.gastroenterologist,"Gastroenterologist")))
-        showCategories.add((ModelHomeConsulteeBottom(R.drawable.oncologists,"Oncologists")))
-        showCategories.add((ModelHomeConsulteeBottom(R.drawable.allergy,"Allergy Specialist")))
-        showCategories.add((ModelHomeConsulteeBottom(R.drawable.img_2,"Heart Specialist")))
+        showCategories.add((ModelHomeConsulteeBottom(R.drawable.img_2,"heart specialist")))
+        showCategories.add((ModelHomeConsulteeBottom(R.drawable.img_3,"dentist")))
+        showCategories.add((ModelHomeConsulteeBottom(R.drawable.endocrinology,"endocrinologist")))
+        showCategories.add((ModelHomeConsulteeBottom(R.drawable.family_physicians,"family physicians")))
+        showCategories.add((ModelHomeConsulteeBottom(R.drawable.img_4,"eye specialist")))
+        showCategories.add((ModelHomeConsulteeBottom(R.drawable.gastroenterologist,"gastroenterologist")))
+        showCategories.add((ModelHomeConsulteeBottom(R.drawable.oncologists,"oncologists")))
+        showCategories.add((ModelHomeConsulteeBottom(R.drawable.allergy,"allergist")))
+        showCategories.add((ModelHomeConsulteeBottom(R.drawable.img_2,"heart specialist ")))
 
         adapterCategories.setDate(showCategories)
         binding?.rvConsulteeBottom?.adapter=adapterCategories
@@ -118,21 +130,44 @@ class ConsulteeHomeFragment : Fragment() {
 
 
     private fun initAdapter() {
-        adapterCategories=AdapterHomeConsulteeBottom(showCategories)
+        adapterCategories= AdapterHomeConsulteeBottom(showCategories, object :OnItemClick{
+
+            override fun onClick(position: Int, type: String?, data: Any?) {
+                super.onClick(position, type, data)
+                if (type == "Occupation") {
+                    val occupation = data as String
+                    val intent = Intent(context, ConsultantCategoriesActivity::class.java)
+                    intent.putExtra("selectedCategory", occupation)
+                    startActivity(intent)
+                }
+            }
+        })
+
+
         adapter = AdapterHomeConsulteeTop(showList, object : OnItemClick {
             override fun onClick(position: Int, type: String?, data: Any?) {
 
                 val intent = Intent(context, ConsultantDetailActivity::class.java)
-               // intent.putExtra("book_id", showList[position].id)
-               // intent.putExtra("imam_name",showList[position])
-               // intent.putExtra("total_chapter",showList[position].total_chapters)
-                //intent.putExtra("title",showList[position].title)
+
                 startActivity(intent)
             }
         })
 
 
         binding?.rvConsultantTop?.adapter = adapter
+
+
+    }
+
+    private fun initDrawer() {
+        DrawerToggle= ActionBarDrawerToggle(requireContext() as Activity?, binding?.homeDrawer,R.string.nav_open, R.string.nav_close)
+        binding?.homeDrawer?.addDrawerListener(DrawerToggle)
+        DrawerToggle.syncState()
+    }
+
+    private fun initTopBar() {
+        binding?.topbarHome?.tvTopBarContent?.setText("Home")
+        binding?.topbarHome?.ivImageLeft?.visibility=View.GONE
 
     }
 

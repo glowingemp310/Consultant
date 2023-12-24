@@ -57,7 +57,6 @@ class ConsultantHomeFragment : Fragment() {
     private fun initTopBar() {
         binding?.topbarHome?.tvTopBarContent?.setText("Home")
         binding?.topbarHome?.ivImageLeft?.setImageDrawable(resources.getDrawable(R.drawable.menu))
-       //binding?.topbarHome?.ivImageRight?.setVisibility(View.GONE)
     }
 
 

@@ -4,5 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="transparent"> #00000000</color>
     <color name="teal_700">#B9014287</color>
+    <color name="yellow">#fabe39</color>
+
 
 </resources>
