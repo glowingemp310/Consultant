@@ -1,8 +1,11 @@
 package com.example.consultant.consultant_fragments
 
 import android.app.Activity
+import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,15 +13,23 @@ import android.view.ViewGroup
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.consultant.R
+import com.example.consultant.adapter_classes_consultant.AdapterConsultantAppointments
+import com.example.consultant.consultant_activities.AllAppointmentTypesActivity
 import com.example.consultant.consultant_activities.RegisterClinicActivity
 import com.example.consultant.databinding.FragmentConsultantHomeBinding
+import com.example.consultant.model_classes_consultant.ModelConsultantAppointments
 import com.example.consultant.user_auth.LoginActivity
 import com.example.consultant.utils.SharedPreference
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class ConsultantHomeFragment : Fragment() {
     var binding:FragmentConsultantHomeBinding?=null
+    private lateinit var adopter: AdapterConsultantAppointments
+    val arrlist=ArrayList<ModelConsultantAppointments>()
     lateinit var DrawerToggle: ActionBarDrawerToggle
 
     override fun onCreateView(
@@ -30,12 +41,17 @@ class ConsultantHomeFragment : Fragment() {
         return binding?.getRoot()
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        adopter = AdapterConsultantAppointments(requireContext())
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initTopBar()
         onClick()
-        //setupBarberListingRecycler()
+        showBarberAppointments()
         initDrawer()
     }
 
@@ -46,6 +62,16 @@ class ConsultantHomeFragment : Fragment() {
 
         binding?.tvRegisterClinic?.setOnClickListener {
             val intent= Intent(requireContext(), RegisterClinicActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding?.tvSeeAll?.setOnClickListener {
+            val intent = Intent(requireContext(), AllAppointmentTypesActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding?.tvViewAppointments?.setOnClickListener {
+            val intent = Intent(requireContext(), AllAppointmentTypesActivity::class.java)
             startActivity(intent)
         }
 
@@ -66,6 +92,50 @@ class ConsultantHomeFragment : Fragment() {
     private fun initTopBar() {
         binding?.topbarHome?.tvTopBarContent?.setText("Home")
         binding?.topbarHome?.ivImageLeft?.setImageDrawable(resources.getDrawable(R.drawable.menu))
+    }
+
+
+
+    private fun showBarberAppointments() {
+        binding?.rvAppointsList?.layoutManager = LinearLayoutManager(requireContext())
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val barberId = currentUser.uid
+            val db = FirebaseFirestore.getInstance()
+            db.collection("bookings")
+                .whereEqualTo("Consultant Id", barberId) // filter by shopId to show only appointments for the current barber's shop
+                .get()
+                .addOnSuccessListener { result ->
+                    val appointmentList = ArrayList<ModelConsultantAppointments>()
+                    for (document in result) {
+                        val customerId = document.getString("userId")
+                        if (customerId != null) {
+                            // fetch customer name from users collection using customerId
+                            db.collection("users").document(customerId)
+                                .get()
+                                .addOnSuccessListener { userDocument ->
+                                    val customerName = userDocument.getString("full name") ?: "Unknown"
+                                    val bookingDay = document.getString("Booking day") ?: ""
+                                    val status = document.getString("Status") ?: ""
+                                    val timing = document.getString("BookingTime") ?: ""
+
+                                    val appointmentId = document.id
+                                    val appointment = ModelConsultantAppointments(appointmentId,customerName, bookingDay,timing,status )
+                                    appointmentList.add(appointment)
+                                    adopter.set_Data(appointmentList)
+                                    binding?.rvAppointsList?.adapter = adopter
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.d(ContentValues.TAG, "Error getting user document: ", exception)
+                                }
+                        }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.d(ContentValues.TAG, "Error getting appointments: ", exception)
+                }
+        }
+
     }
 
 

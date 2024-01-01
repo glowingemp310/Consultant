@@ -64,7 +64,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/bg_button"
-        android:fontFamily="@font/poppins"
+        android:fontFamily="@font/poppins_bold"
         android:text="Go back to home"
         android:textAlignment="center"
         android:textColor="@color/white"

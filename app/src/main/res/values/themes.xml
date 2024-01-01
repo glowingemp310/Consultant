@@ -20,5 +20,14 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="SpinnerItemStyle">
+        <item name="android:textColor">@color/white</item> <!-- Text color for the selected item -->
+    </style>
+
+    <style name="SpinnerDropdownStyle" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textColor">@color/white</item> <!-- Text color for the default item -->
+    </style>
+
+
     <style name="Theme.Consultant" parent="Base.Theme.Consultant" />
 </resources>

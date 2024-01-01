@@ -80,11 +80,12 @@
                         tools:layout_editor_absoluteX="20dp" />
 
                     <TextView
+                        android:id="@+id/tvSeeAll"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="See All"
                         android:textColor="@color/white"
-                        android:textSize="18sp"/>
+                        android:textSize="18sp" />
 
                 </LinearLayout>
 

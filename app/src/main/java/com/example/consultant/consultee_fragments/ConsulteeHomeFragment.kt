@@ -16,8 +16,10 @@ import com.example.consultant.OnItemClick
 import com.example.consultant.R
 import com.example.consultant.adapter_classes_consultee.AdapterHomeConsulteeBottom
 import com.example.consultant.adapter_classes_consultee.AdapterHomeConsulteeTop
+import com.example.consultant.consultee_activities.AllConsultantsActivity
 import com.example.consultant.consultee_activities.ConsultantCategoriesActivity
 import com.example.consultant.consultee_activities.ConsultantDetailActivity
+import com.example.consultant.consultee_activities.VIewAppointmentsActivity
 import com.example.consultant.databinding.FragmentConsulteeHomeBinding
 import com.example.consultant.model_classes_consultee.ModelHomeConsulteeBottom
 import com.example.consultant.model_classes_consultee.ModelHomeConsulteeTop
@@ -55,6 +57,7 @@ class ConsulteeHomeFragment : Fragment() {
         initTopBar()
 
 
+
     }
 
     private fun onClick() {
@@ -67,6 +70,16 @@ class ConsulteeHomeFragment : Fragment() {
             val intent = Intent(requireContext(), LoginActivity::class.java)
             startActivity(intent)
             activity?.finishAffinity()
+        }
+
+        binding?.tvMyAppintments?.setOnClickListener {
+            val intent = Intent(requireContext(), VIewAppointmentsActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding?.tvSeeAll?.setOnClickListener {
+            val intent = Intent(requireContext(), AllConsultantsActivity::class.java)
+            startActivity(intent)
         }
 
 

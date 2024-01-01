@@ -14,6 +14,15 @@
         android:theme="@style/Theme.Consultant"
         tools:targetApi="31">
         <activity
+            android:name=".consultee_activities.VIewAppointmentsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".consultant_activities.AllAppointmentTypesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".consultee_activities.AllConsultantsActivity"
+            android:exported="false" />
+        <activity
             android:name=".consultee_activities.BookingAppointmentActivity"
             android:exported="false" />
         <activity
