@@ -14,6 +14,7 @@ import com.example.consultant.adapter_classes_consultee.AdapterSetBookTime
 import com.example.consultant.bottom_navigation.BottomNavConsultee
 import com.example.consultant.databinding.ActivityBookingAppointmentBinding
 import com.example.consultant.model_classes_consultee.ModelSetBookTime
+import com.example.consultant.progress_dialog.ProgressDialog
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -24,13 +25,15 @@ import java.util.Locale
 
 class BookingAppointmentActivity : AppCompatActivity() {
     private lateinit var consultantId: String
-    lateinit var consultantName:String
+    lateinit var consultantName: String
     val db = FirebaseFirestore.getInstance()
     private lateinit var currentUserId: String
     private lateinit var mAuth: FirebaseAuth
     var bookingDate: String? = null
     private var selectedTime: String? = null
-    lateinit var tvGoBackHome:TextView
+    lateinit var tvGoBackHome: TextView
+    val loader = ProgressDialog(this)
+
 
     lateinit var binding: ActivityBookingAppointmentBinding
 
@@ -55,6 +58,7 @@ class BookingAppointmentActivity : AppCompatActivity() {
 
     private fun onClick() {
         binding?.btnConfirmBooking?.setOnClickListener {
+            loader.showDialog()
             confirmBooking()
         }
 
@@ -67,50 +71,33 @@ class BookingAppointmentActivity : AppCompatActivity() {
 
         selectedTime = (binding?.rvSetTime?.adapter as? AdapterSetBookTime)?.getSelectedTime()
 
-        if(CheckAllFields()) {
+        if (CheckAllFields()) {
 
             if (currentUserId != null) {
                 val userId = currentUserId
 
                 val currentDateTime = Date()
-
-                // Parse the booking date and time
-                val bookingDateTime = SimpleDateFormat(
-                    "dd-MM-yyyy hh:mm a",
-                    Locale.US
-                ).parse("$bookingDate $selectedTime")
+                val bookingDateTime = SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.US ).parse("$bookingDate $selectedTime")
 
                 // Compare the booking date and time with the current date and time
-                val isValidBookingDateTime =
-                    bookingDateTime.after(currentDateTime) || bookingDateTime == currentDateTime
+                val isValidBookingDateTime = bookingDateTime.after(currentDateTime) || bookingDateTime == currentDateTime
 
                 // Check if the booking date and time is valid
                 if (!isValidBookingDateTime) {
-                    //loader.dialogDismiss()
-                    // Invalid booking date or time
-                    Toast.makeText(
-                        this,
-                        "Invalid booking date or time. Please select a current or future date and time.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this, "Invalid booking date or time. Please select a current or future date and time.", Toast.LENGTH_SHORT).show()
                     return
                 }
 
 
-                // Check if user has already made a booking for the shop
+                // Check if user has already made a booking for the consultant
                 db.collection("bookings").whereEqualTo("userId", userId)
                     .whereEqualTo("Consultant Id", consultantId)
                     .whereEqualTo("Booking day", bookingDate)
-                    .whereEqualTo("BookingTime", selectedTime)
-                    .get().addOnSuccessListener { querySnapshot ->
-                        // loader.dialogDismiss()
+                    .whereEqualTo("BookingTime", selectedTime).get()
+                    .addOnSuccessListener { querySnapshot ->
                         if (!querySnapshot.isEmpty) {
-                            // User has already made a booking for the same shop, day, and time
-                            Toast.makeText(
-                                this,
-                                "You have already made a booking for this shop at this time",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            // User has already made a booking for the same consultant, day, and time
+                            Toast.makeText(this,"You have already made a booking for this shop at this time",Toast.LENGTH_SHORT).show()
                         } else {
                             // Check if the selected time slot is already booked by another customer
                             db.collection("bookings").whereEqualTo("Consultant Id", consultantId)
@@ -119,11 +106,7 @@ class BookingAppointmentActivity : AppCompatActivity() {
                                 .addOnSuccessListener { querySnapshot ->
                                     if (!querySnapshot.isEmpty) {
                                         // The selected time slot is already booked by another customer
-                                        Toast.makeText(
-                                            this,
-                                            "This time slot is already booked, please choose another one",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        Toast.makeText(   this,  "This time slot is already booked, please choose another one", Toast.LENGTH_SHORT).show()
                                     } else {
                                         // User has not made a booking for the shop and the time slot is available, so create a new booking document
                                         val booking = hashMapOf(
@@ -137,7 +120,7 @@ class BookingAppointmentActivity : AppCompatActivity() {
 
                                         db.collection("bookings").add(booking)
                                             .addOnSuccessListener { documentRef ->
-                                                //loader.dialogDismiss()
+                                                loader.dialogDismiss()
                                                 val dialog = BottomSheetDialog(this)
                                                 val view = layoutInflater.inflate(
                                                     R.layout.activity_booking_success_message, null
@@ -153,7 +136,7 @@ class BookingAppointmentActivity : AppCompatActivity() {
                                                     startActivity(intent)
                                                 }
                                             }.addOnFailureListener { exception ->
-                                                //loader.dialogDismiss()
+                                                loader.dialogDismiss()
                                                 Log.e(
                                                     ContentValues.TAG,
                                                     "Error adding booking to Firestore",
@@ -162,7 +145,7 @@ class BookingAppointmentActivity : AppCompatActivity() {
                                             }
                                     }
                                 }.addOnFailureListener { exception ->
-                                    //loader.dialogDismiss()
+                                    loader.dialogDismiss()
                                     Log.e(
                                         ContentValues.TAG,
                                         "Error checking if time slot is available",
@@ -171,7 +154,7 @@ class BookingAppointmentActivity : AppCompatActivity() {
                                 }
                         }
                     }.addOnFailureListener { exception ->
-                        //loader.dialogDismiss()
+                        loader.dialogDismiss()
                         Log.e(
                             ContentValues.TAG,
                             "Error checking if user has made a booking",
@@ -227,11 +210,9 @@ class BookingAppointmentActivity : AppCompatActivity() {
     }
 
 
-
-
     private fun CheckAllFields(): Boolean {
-        if (bookingDate .isNullOrEmpty()) { // // Check if user has selected a date
-           // loader.dialogDismiss()
+        if (bookingDate.isNullOrEmpty()) { // // Check if user has selected a date
+            loader.dialogDismiss()
             Toast.makeText(this, "Please select a booking date", Toast.LENGTH_SHORT).show()
             return false
         }
@@ -239,7 +220,7 @@ class BookingAppointmentActivity : AppCompatActivity() {
 
 
         if (selectedTime.isNullOrEmpty()) {
-           // loader.dialogDismiss()
+             loader.dialogDismiss()
             Toast.makeText(this, "Please select booking time", Toast.LENGTH_SHORT).show()
             return false
         }

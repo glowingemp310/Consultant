@@ -100,10 +100,10 @@ class ConsultantHomeFragment : Fragment() {
         binding?.rvAppointsList?.layoutManager = LinearLayoutManager(requireContext())
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
-            val barberId = currentUser.uid
+            val consultantId = currentUser.uid
             val db = FirebaseFirestore.getInstance()
             db.collection("bookings")
-                .whereEqualTo("Consultant Id", barberId) // filter by shopId to show only appointments for the current barber's shop
+                .whereEqualTo("Consultant Id", consultantId)
                 .get()
                 .addOnSuccessListener { result ->
                     val appointmentList = ArrayList<ModelConsultantAppointments>()

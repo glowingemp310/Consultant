@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.example.consultant.bottom_navigation.BottomNavConsultant
 import com.example.consultant.bottom_navigation.BottomNavConsultee
 import com.example.consultant.databinding.ActivityLoginBinding
+import com.example.consultant.progress_dialog.ProgressDialog
 import com.example.consultant.utils.SharedPreference
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,6 +17,8 @@ class LoginActivity : AppCompatActivity() {
     lateinit var binding:ActivityLoginBinding
     lateinit var mAuth: FirebaseAuth
     lateinit var dbRef: FirebaseFirestore
+    val loader = ProgressDialog(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityLoginBinding.inflate(layoutInflater)
@@ -46,9 +49,14 @@ class LoginActivity : AppCompatActivity() {
 
             if(checkAllFields()) {
 
-               // loader.showDialog()
+                loader.showDialog()
                 loginUser(email,password)
             }
+        }
+
+        binding.tvForgetPassword.setOnClickListener {
+            val intent = Intent(this, ForgetPasswordActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -61,7 +69,7 @@ class LoginActivity : AppCompatActivity() {
                     // If the authentication is successful, get the user info from the database
                     dbRef.collection("users").whereEqualTo("email", email).get()
                         .addOnSuccessListener { querySnapshot ->
-                            //loader.dialogDismiss()
+                            loader.dialogDismiss()
                             if (!querySnapshot.isEmpty) {
                                 val document = querySnapshot.documents[0]
                                 val profession = document.getString("profession")
@@ -78,12 +86,12 @@ class LoginActivity : AppCompatActivity() {
                                     }
                                 }
                             } else {
-                               // loader.dialogDismiss()
+                                loader.dialogDismiss()
                                 Toast.makeText(applicationContext, "User not found.", Toast.LENGTH_SHORT).show()
                             }
                         }
                 } else {
-                   // loader.dialogDismiss()
+                    loader.dialogDismiss()
                     Toast.makeText(applicationContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
                 }
             }

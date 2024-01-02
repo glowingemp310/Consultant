@@ -49,7 +49,7 @@ class AllConsultantsActivity : AppCompatActivity() {
                     val consultantImage = document.getString("image") ?: ""
                     val consultantName = document.getString("Consultant Name") ?: ""
                     val clinicName = document.getString("Clinic Name") ?: ""
-                    val phoneNo = document.getString("Phone No") ?: ""
+                    val phoneNo = document.getString("Phone no") ?: ""
                     val about = document.getString("About") ?: ""
                     val address = document.getString("Address") ?: ""
                     val cnic = document.getString("Cnic") ?: ""

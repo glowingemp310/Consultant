@@ -57,18 +57,14 @@ class AdapterConsultantAppointments(val context: Context): RecyclerView.Adapter<
             // Update appointment status in database to "Accepted"
             val db = FirebaseFirestore.getInstance()
             if(currentUser!=null) {
-                val shopId =currentUser
 
                 val appointmentRef = db.collection("bookings").document(holder.appointmentId!!)
                 appointmentRef.update("Status", "Accepted")
                     .addOnSuccessListener {
-                        // Update status text view
 
                         holder.tvStatus.text = "Accepted"
                         holder.tvStatus.visibility= View.VISIBLE
                         holder.tvCompletedAppointment.visibility= View.VISIBLE
-                        //holder.tvStatus.visibility=View.VISIBLE
-                        // Hide accept and reject buttons
                         holder.btnAccept.visibility = View.GONE
                         holder.btnReject.visibility = View.GONE
 
@@ -83,7 +79,6 @@ class AdapterConsultantAppointments(val context: Context): RecyclerView.Adapter<
             // Update appointment status in database to "Rejected"
             val db = FirebaseFirestore.getInstance()
             if (currentUser != null) {
-                val shopId = currentUser
                 val appointmentRef = db.collection("bookings").document(holder.appointmentId!!)
                 appointmentRef.update("Status", "Rejected")
                     .addOnSuccessListener {
@@ -91,7 +86,6 @@ class AdapterConsultantAppointments(val context: Context): RecyclerView.Adapter<
 
                         holder.tvStatus.text = "Rejected"
                         holder.tvStatus.visibility= View.VISIBLE
-                        // Hide accept and reject buttons
                         holder.btnAccept.visibility = View.GONE
                         holder.btnReject.visibility = View.GONE
                     }

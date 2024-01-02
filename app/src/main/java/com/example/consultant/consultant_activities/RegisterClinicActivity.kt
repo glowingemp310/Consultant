@@ -14,9 +14,11 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.example.consultant.R
 import com.example.consultant.bottom_navigation.BottomNavConsultant
 import com.example.consultant.databinding.ActivityRegisterClinicBinding
+import com.example.consultant.progress_dialog.ProgressDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -35,6 +37,8 @@ class RegisterClinicActivity : AppCompatActivity() {
     var openTimeSet = false
     var closeTimeSet = false
     var occupation=""
+    val loader = ProgressDialog(this)
+
     private val occupations = arrayOf("Heart Specialist", "Eye Specialist", "Dermatologists", "Dentist","Allergist","Endocrinologists","Gastroenterologists","Oncologists","Family Physicians")
 
     private lateinit var firestore: FirebaseFirestore
@@ -47,10 +51,11 @@ class RegisterClinicActivity : AppCompatActivity() {
         setContentView(binding.root)
         firestore=FirebaseFirestore.getInstance()
         mAuth=FirebaseAuth.getInstance()
-
-        onClick()
         initTopBar()
+        setShopDetails()
         initAdapter()
+        onClick()
+
     }
 
     private fun onClick() {
@@ -75,8 +80,13 @@ class RegisterClinicActivity : AppCompatActivity() {
         }
 
         binding.btnRegister.setOnClickListener {
-            registerOrUpdateShop()
+            loader.showDialog()
+            registerOrUpdateClinic()
 
+        }
+
+        binding.topbarHome.ivImageLeft.setOnClickListener {
+            onBackPressed()
         }
     }
 
@@ -101,11 +111,41 @@ class RegisterClinicActivity : AppCompatActivity() {
             }
     }
 
-    private fun registerOrUpdateShop() {
+
+    private fun setShopDetails() {
+        // Set the values in the fields from the Firestore database
+        val clinicRef = firestore.collection("clinics").document(mAuth.currentUser?.uid!!)
+        clinicRef.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val clinic = documentSnapshot.data
+                    binding?.etName?.setText(clinic?.get("Consultant Name").toString())
+                    binding?.etClinicName?.setText(clinic?.get("Clinic Name").toString())
+                    binding?.etPhoneNo?.setText(clinic?.get("Phone no").toString())
+                    binding?.etAddress?.setText(clinic?.get("Address").toString())
+                    binding?.etAboutYourSelf?.setText(clinic?.get("About").toString())
+                    binding?.etCnic?.setText(clinic?.get("Cnic").toString())
+                    binding?.tvOpenTime?.setText(clinic?.get("OpenTime").toString())
+                    binding?.tvCloseTime?.setText(clinic?.get("CloseTime").toString())
+                    binding?.ivConsultantImage?.let {
+                        val imageUrl = clinic?.get("image").toString()
+                        Glide.with(this).load(imageUrl).placeholder(R.drawable.progress_animation).into(it)
+                    }
+                    val occupation = clinic?.get("Occupation").toString()
+                    val index = occupations.indexOf(occupation)
+                    binding?.spSelectOccupation?.setSelection(index)
+                }
+            }
+
+        binding?.btnRegister?.text = "Update Details"
+
+    }
+
+    private fun registerOrUpdateClinic() {
         val shopRef = firestore.collection("clinics").document(mAuth.currentUser?.uid!!)
         shopRef.get()
             .addOnSuccessListener { documentSnapshot ->
-               // loader.dialogDismiss()
+                loader.dialogDismiss()
                 if (documentSnapshot.exists()) {
                     val clinic = documentSnapshot.data
 
@@ -145,7 +185,6 @@ class RegisterClinicActivity : AppCompatActivity() {
                     }
 
 
-                    // Update the shop image if a new one was selected
                     val consultantImage = binding?.ivConsultantImage?.drawable
                     if (consultantImage != null && consultantImage is BitmapDrawable) {
                         val bitmap = consultantImage.bitmap
@@ -158,19 +197,19 @@ class RegisterClinicActivity : AppCompatActivity() {
                     // Only update the document if there are changes
                     if (updatedDetail.isNotEmpty()) {
                         shopRef.set(updatedDetail, SetOptions.merge()).addOnSuccessListener {
-                           // loader.dialogDismiss()
-                            Toast.makeText(this, "Shop details updated successfully", Toast.LENGTH_SHORT).show()
+                            loader.dialogDismiss()
+                            Toast.makeText(this, "Clinic details updated successfully", Toast.LENGTH_SHORT).show()
                             val intent = Intent(this, BottomNavConsultant::class.java)
                             startActivity(intent)
                             finish()
                         }
                             .addOnFailureListener {
-                               // loader.dialogDismiss()
-                                Toast.makeText(this, "Error updating shop details", Toast.LENGTH_SHORT).show()
+                                loader.dialogDismiss()
+                                Toast.makeText(this, "Error updating clinic details", Toast.LENGTH_SHORT).show()
                             }
                     } else {
-                       // loader.dialogDismiss()
-                        Toast.makeText(this,"No changes were made to the shop details", Toast.LENGTH_SHORT).show()
+                        loader.dialogDismiss()
+                        Toast.makeText(this,"No changes were made to the clinic details", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this, BottomNavConsultant::class.java)
                         startActivity(intent)
                         finish()
@@ -180,15 +219,15 @@ class RegisterClinicActivity : AppCompatActivity() {
                     // Create new shop
 
                     if (checkAllFields()) {
-                       // loader.showDialog()
-                        createNewShop()
+                        loader.showDialog()
+                        createNewClinic()
                     }
                 }
             }
     }
 
 
-    private fun createNewShop() {
+    private fun createNewClinic() {
 
         val newClinic = hashMapOf(
             "Consultant Name" to binding.etName.text.toString(),
@@ -202,7 +241,7 @@ class RegisterClinicActivity : AppCompatActivity() {
             "CloseTime" to binding.tvCloseTime.text.toString(),
         )
 
-        // Update the shop image if a new one was selected
+        // Update the image if a new one was selected
         val consultantImage = binding?.ivConsultantImage?.drawable
         if (consultantImage != null && consultantImage is BitmapDrawable) {
             val bitmap = consultantImage.bitmap
@@ -222,7 +261,7 @@ class RegisterClinicActivity : AppCompatActivity() {
                 }
                 imageRef.downloadUrl
             }.addOnCompleteListener { task ->
-               // loader.dialogDismiss()
+                loader.dialogDismiss()
                 if (task.isSuccessful) {
                     val downloadUri = task.result
                     newClinic["image"] = downloadUri.toString()
@@ -235,17 +274,17 @@ class RegisterClinicActivity : AppCompatActivity() {
                             finish()
                         }
                         .addOnFailureListener {
-                           // loader.dialogDismiss()
+                            loader.dialogDismiss()
                             Toast.makeText(this, "Error registering clinic", Toast.LENGTH_SHORT).show()
                         }
                 } else {
-                    //loader.dialogDismiss()
+                    loader.dialogDismiss()
                     Toast.makeText(this, "Error uploading consultant image", Toast.LENGTH_SHORT).show()
                 }
             }
         } else {
-            //loader.dialogDismiss()
-            Toast.makeText(this, "Please select an image for the shop", Toast.LENGTH_SHORT).show()
+            loader.dialogDismiss()
+            Toast.makeText(this, "Please select an image ", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -424,7 +463,7 @@ class RegisterClinicActivity : AppCompatActivity() {
 
     private fun initTopBar() {
         binding?.topbarHome?.tvTopBarContent?.setText("Register")
-        binding?.topbarHome?.ivImageLeft?.setImageDrawable(resources.getDrawable(R.drawable.menu))
+        binding?.topbarHome?.ivImageLeft?.setImageDrawable(resources.getDrawable(R.drawable.arrow_back))
         //binding?.topbarHome?.ivImageRight?.setVisibility(View.GONE)
     }
 

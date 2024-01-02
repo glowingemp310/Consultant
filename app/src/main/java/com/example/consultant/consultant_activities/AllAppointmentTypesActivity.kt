@@ -29,7 +29,7 @@ class AllAppointmentTypesActivity : AppCompatActivity() {
         setContentView(binding.root)
         initTopBar()
         topAppointmentTypes()
-        showBarberAppointments()
+        showConsultantAppointments()
         onClick()
     }
 
@@ -39,7 +39,7 @@ class AllAppointmentTypesActivity : AppCompatActivity() {
         }
     }
 
-    private fun showBarberAppointments() {
+    private fun showConsultantAppointments() {
         binding?.rvAppointsList?.layoutManager = LinearLayoutManager(this)
         val appointmentList = ArrayList<ModelConsultantAppointments>()
         val currentUser = FirebaseAuth.getInstance().currentUser

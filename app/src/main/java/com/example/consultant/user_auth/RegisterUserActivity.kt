@@ -10,6 +10,7 @@ import com.example.consultant.R
 import com.example.consultant.bottom_navigation.BottomNavConsultant
 import com.example.consultant.bottom_navigation.BottomNavConsultee
 import com.example.consultant.databinding.ActivityRegisterUserBinding
+import com.example.consultant.progress_dialog.ProgressDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -18,6 +19,8 @@ class RegisterUserActivity : AppCompatActivity() {
     lateinit var mAuth: FirebaseAuth
     lateinit var firestore: FirebaseFirestore
     var isAllFieldChecked = false
+    val loader = ProgressDialog(this)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +61,7 @@ class RegisterUserActivity : AppCompatActivity() {
 
             if(isAllFieldChecked)
             {
+                loader.showDialog()
                 createUser(fullName,email,password,genderRole,professionRole)
             }
 
@@ -83,7 +87,7 @@ class RegisterUserActivity : AppCompatActivity() {
 
                     firestore.collection("users").document(mAuth.currentUser!!.uid).set(user)
                         .addOnSuccessListener {
-                           // loader.dialogDismiss()
+                            loader.dialogDismiss()
                             when (professionRole) {
                                 "Consultant" -> {
                                     val intent = Intent(this, BottomNavConsultant::class.java)
@@ -96,7 +100,7 @@ class RegisterUserActivity : AppCompatActivity() {
                             }
                         }
                         .addOnFailureListener {
-                          //  loader.dialogDismiss()
+                           loader.dialogDismiss()
                             // If user info could not be added to Firestore, show an error message
                             Toast.makeText(applicationContext, "Failed to add user info.", Toast.LENGTH_SHORT).show()
                         }

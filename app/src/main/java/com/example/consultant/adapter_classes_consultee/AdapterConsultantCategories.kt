@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.consultant.OnItemClick
+import com.example.consultant.R
 import com.example.consultant.databinding.ItemConsultantCategoriesBinding
 import com.example.consultant.databinding.ItemConsulteeTopBinding
 import com.example.consultant.model_classes_consultee.ModelConsultantCategories
@@ -33,7 +34,8 @@ class AdapterConsultantCategories(var showData: MutableList<ModelHomeConsulteeTo
     override fun onBindViewHolder(holder: AdapterConsultantCategories.ViewHolder, position: Int) {
         val consultantCategories = showData[position]
         holder.binding.model = consultantCategories
-        Glide.with(binding.ivConsultantImage).load(consultantCategories.consultantImage).into(binding.ivConsultantImage)
+        Glide.with(binding.ivConsultantImage).load(consultantCategories.consultantImage).placeholder(
+            R.drawable.progress_animation).into(binding.ivConsultantImage)
         holder.binding.tvConsultantName.text = consultantCategories.consultantName
         holder.binding.tvConsultantOccupation.text = consultantCategories.occupation
 

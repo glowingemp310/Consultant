@@ -18,6 +18,7 @@ import androidx.databinding.DataBindingUtil
 import com.example.consultant.R
 import com.example.consultant.databinding.FragmentConsultantHomeBinding
 import com.example.consultant.databinding.FragmentConsulteeProfileBinding
+import com.example.consultant.progress_dialog.ProgressDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -31,6 +32,8 @@ class ConsulteeProfileFragment : Fragment() {
     val currentUser= FirebaseAuth.getInstance().currentUser
     val db = FirebaseFirestore.getInstance()
     val storageRef = FirebaseStorage.getInstance().reference
+    private lateinit var loader: ProgressDialog
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +43,7 @@ class ConsulteeProfileFragment : Fragment() {
         binding = DataBindingUtil.inflate<FragmentConsulteeProfileBinding>(
             inflater, R.layout.fragment_consultee_profile, container, false
         )
+        loader=ProgressDialog(requireActivity())
 
         return binding.getRoot()
     }
@@ -53,7 +57,7 @@ class ConsulteeProfileFragment : Fragment() {
 
     private fun onClick() {
         binding?.btnSaveChanges?.setOnClickListener {
-           // loader.showDialog()
+            loader.showDialog()
             updateProfile()
         }
 
@@ -149,24 +153,20 @@ class ConsulteeProfileFragment : Fragment() {
 
                     db.collection("users").document(userId).update(updatedFields)
                         .addOnSuccessListener {
-                            //loader.dialogDismiss()
-                            // Update successful
+                            loader.dialogDismiss()
                             Toast.makeText(requireContext(), "Changes saved successfully", Toast.LENGTH_SHORT).show()
-                            //val intent = Intent(requireContext(), Bott::class.java)
-                            //startActivity(intent)
+
 
                         }
 
                         .addOnFailureListener { exception ->
-                            //loader.dialogDismiss()
-                            // Handle any errors that occur during the update
+                            loader.dialogDismiss()
                             Toast.makeText(requireContext(), "Failed to save changes", Toast.LENGTH_SHORT).show()
 
                         }
                 }
             } else {
-              //  loader.dialogDismiss()
-                // No profile picture selected, update the user's profile without image
+               loader.dialogDismiss()
                 if (updatedFields.isEmpty()) {
                     Toast.makeText(requireContext(), "Enter a field to update", Toast.LENGTH_SHORT).show()
                     return
@@ -174,15 +174,12 @@ class ConsulteeProfileFragment : Fragment() {
                 db.collection("users").document(userId)
                     .update(updatedFields)
                     .addOnSuccessListener {
-                       // loader.dialogDismiss()
-                        // Update successful
+                        loader.dialogDismiss()
                         Toast.makeText(requireContext(), "Changes saved successfully", Toast.LENGTH_SHORT).show()
-                      //  val intent = Intent(requireContext(), MainFragmentNav::class.java)
-                      //  startActivity(intent)
+
                     }
                     .addOnFailureListener { exception ->
-                    //    loader.dialogDismiss()
-                        // Handle any errors that occur during the update
+                      loader.dialogDismiss()
                         Toast.makeText(requireContext(), "Failed to save changes", Toast.LENGTH_SHORT).show()
                     }
             }
