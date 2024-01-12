@@ -102,6 +102,7 @@ class ConsulteeHomeFragment : Fragment() {
                 val address = document.getString("Address") ?: ""
                 val cnic = document.getString("Cnic") ?: ""
                 val occupation = document.getString("Occupation") ?: ""
+                val documentImage = document.getString("DocumentImage") ?: ""
                 val openTime = document.getString("OpenTime") ?: ""
                 val closeTime = document.getString("CloseTime") ?: ""
 
@@ -116,6 +117,7 @@ class ConsulteeHomeFragment : Fragment() {
                     cnic,
                     about,
                     occupation,
+                    documentImage,
                     closeTime,
                     openTime
                 )

@@ -27,6 +27,8 @@ class ConsultantDetailActivity : AppCompatActivity() {
             binding.tvAbout.text = consultantObj!!.about
             binding.tvOccupation.text = consultantObj!!.occupation
             binding.tvPhoneNo.text = consultantObj!!.phoneNo
+            Glide.with(binding.ivDocument).load(consultantObj!!.documentImage).into(binding.ivDocument)
+
             val timings = "${consultantObj!!.openTime} - ${consultantObj!!.closeTime}"
             binding.tvTimings.text= timings
         }

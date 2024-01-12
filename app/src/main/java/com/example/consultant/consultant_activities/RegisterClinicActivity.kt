@@ -72,11 +72,11 @@ class RegisterClinicActivity : AppCompatActivity() {
         }
 
         binding.ivConsultantImage.setOnClickListener {
-            choosePhotoOptions()
+choosePhotoOptions()
         }
 
         binding.ivPostUpload?.setOnClickListener {
-            choosePhotoOptions()
+            choosePhotoOptionsForDocument()
         }
 
         binding.btnRegister.setOnClickListener {
@@ -89,6 +89,31 @@ class RegisterClinicActivity : AppCompatActivity() {
             onBackPressed()
         }
     }
+
+    private fun choosePhotoOptionsForDocument() {
+        val options = arrayOf<CharSequence>("Take Photo", "Choose from Gallery", "Cancel")
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Add Document Image!")
+        builder.setItems(options) { dialog, item ->
+            when {
+                options[item] == "Take Photo" -> {
+                    val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    startActivityForResult(takePicture, 2) // Use a different requestCode for ivPostUpload
+                }
+                options[item] == "Choose from Gallery" -> {
+                    val pickPhoto =
+                        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    startActivityForResult(pickPhoto, 3) // Use a different requestCode for ivPostUpload
+                }
+                options[item] == "Cancel" -> {
+                    dialog.dismiss()
+                }
+            }
+        }
+        builder.show()
+    }
+
+
 
     private fun initAdapter()
     {
@@ -131,6 +156,13 @@ class RegisterClinicActivity : AppCompatActivity() {
                         val imageUrl = clinic?.get("image").toString()
                         Glide.with(this).load(imageUrl).placeholder(R.drawable.progress_animation).into(it)
                     }
+
+                    binding?.ivDocument?.let {
+                        val imageUrlDocument = clinic?.get("DocumentImage").toString()
+                        Glide.with(this).load(imageUrlDocument).placeholder(R.drawable.progress_animation).into(it)
+                    }
+                    binding.ivPostUpload.visibility=View.GONE
+                    binding.tvChooseImage.visibility=View.GONE
                     val occupation = clinic?.get("Occupation").toString()
                     val index = occupations.indexOf(occupation)
                     binding?.spSelectOccupation?.setSelection(index)
@@ -265,6 +297,7 @@ class RegisterClinicActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val downloadUri = task.result
                     newClinic["image"] = downloadUri.toString()
+                    uploadDocumentImage(newClinic)
                     firestore.collection("clinics").document(mAuth.currentUser?.uid!!)
                         .set(newClinic)
                         .addOnSuccessListener {
@@ -286,7 +319,66 @@ class RegisterClinicActivity : AppCompatActivity() {
             loader.dialogDismiss()
             Toast.makeText(this, "Please select an image ", Toast.LENGTH_SHORT).show()
         }
+
+
     }
+
+    private fun uploadDocumentImage(newClinic: HashMap<String, String>) {
+        // Update the document image if a new one was selected
+        val documentImage = binding?.ivDocument?.drawable
+        if (documentImage != null && documentImage is BitmapDrawable) {
+            val documentBitmap = documentImage.bitmap
+            val documentImageRef =
+                storageRef.child("document_images/${mAuth.currentUser?.uid!!}/${UUID.randomUUID()}.jpg")
+
+            // Create a byte array output stream to write the document bitmap data into a byte array
+            val documentBaos = ByteArrayOutputStream()
+            documentBitmap.compress(Bitmap.CompressFormat.JPEG, 100, documentBaos)
+            val documentData = documentBaos.toByteArray()
+
+            // Upload the document byte array to Firebase Storage
+            val documentUploadTask = documentImageRef.putBytes(documentData)
+
+            documentUploadTask.continueWithTask { documentTask ->
+                if (!documentTask.isSuccessful) {
+                    documentTask.exception?.let { throw it }
+                }
+                documentImageRef.downloadUrl
+            }.addOnCompleteListener { documentTask ->
+                loader.dialogDismiss()
+                if (documentTask.isSuccessful) {
+                    val documentDownloadUri = documentTask.result
+                    newClinic["DocumentImage"] = documentDownloadUri.toString()
+
+                    // Continue with saving the clinic data to Firestore
+                    saveClinicToFirestore(newClinic)
+                } else {
+                    Toast.makeText(this, "Error uploading document image", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            loader.dialogDismiss()
+            Toast.makeText(this, "Please attach your document eg: Degree, Certificate", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveClinicToFirestore(newClinic: HashMap<String, String>) {
+        // Save the clinic data to Firestore
+        firestore.collection("clinics").document(mAuth.currentUser?.uid!!)
+            .set(newClinic)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Clinic registered successfully", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, BottomNavConsultant::class.java)
+                startActivity(intent)
+                finish()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error registering clinic", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
+
 
 
     private fun bitmapToFile(bitmap: Bitmap?): File {
@@ -311,7 +403,10 @@ class RegisterClinicActivity : AppCompatActivity() {
 
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+
+
+/*    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK) {
@@ -331,7 +426,41 @@ class RegisterClinicActivity : AppCompatActivity() {
                 }
             }
         }
+    }*/
+
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
+                // Handling ivConsultantImage
+                0 -> {
+                    val imageBitmap = data?.extras?.get("data") as Bitmap
+                    binding?.ivConsultantImage?.setImageBitmap(imageBitmap)
+                }
+                1 -> {
+                    val imageUri = data?.data
+                    binding?.ivConsultantImage?.setImageURI(imageUri)
+                }
+
+                // Handling ivPostUpload
+                2 -> {
+                    val imageBitmap = data?.extras?.get("data") as Bitmap
+                    binding?.ivDocument?.setImageBitmap(imageBitmap)
+
+                }
+                3 -> {
+                    val imageUri = data?.data
+                    binding?.ivDocument?.setImageURI(imageUri)
+                   
+                }
+            }
+        }
     }
+
+
 
     private fun choosePhotoOptions()
     {

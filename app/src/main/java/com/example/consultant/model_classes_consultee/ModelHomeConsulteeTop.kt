@@ -12,6 +12,7 @@ class ModelHomeConsulteeTop() : Serializable {
     var cnic: String? = null
     var about: String? = null
     var occupation: String? = null
+    var documentImage: String? = null
     var closeTime: String? = null
     var openTime: String? = null
 
@@ -26,6 +27,7 @@ class ModelHomeConsulteeTop() : Serializable {
         cnic: String,
         about: String,
         occupation: String,
+        documentImage:String,
         closeTime: String,
         openTime: String
     ) : this() {
@@ -38,6 +40,7 @@ class ModelHomeConsulteeTop() : Serializable {
         this.cnic = cnic
         this.about = about
         this.occupation = occupation
+        this.documentImage=documentImage
         this.closeTime = closeTime
         this.openTime = openTime
     }

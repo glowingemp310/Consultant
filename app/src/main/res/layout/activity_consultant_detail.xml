@@ -289,6 +289,34 @@
             </LinearLayout>
 
 
+            <TextView
+                android:id="@+id/tvDocument"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/poppins_bold"
+                android:text="Document or certificate of Consultant if any "
+                android:textColor="#0f253f"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/llConsultantTiming" />
+
+            <ImageView
+                android:id="@+id/ivDocument"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:layout_margin="20dp"
+                app:layout_constraintTop_toBottomOf="@id/tvDocument"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+
             <Button
                 android:id="@+id/btnBooking"
                 android:layout_width="match_parent"
@@ -303,7 +331,7 @@
                 android:textSize="18sp"
                 android:layout_marginTop="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/llConsultantTiming"
+               app:layout_constraintTop_toBottomOf="@id/ivDocument"
                 tools:layout_editor_absoluteX="20dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

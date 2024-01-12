@@ -54,10 +54,12 @@ class AllConsultantsActivity : AppCompatActivity() {
                     val address = document.getString("Address") ?: ""
                     val cnic = document.getString("Cnic") ?: ""
                     val occupation = document.getString("Occupation") ?: ""
+                    val documentImage = document.getString("DocumentImage") ?: ""
+
                     val openTime = document.getString("OpenTime") ?: ""
                     val closeTime = document.getString("CloseTime") ?: ""
 
-                    val lists = ModelHomeConsulteeTop(id,consultantImage,consultantName,clinicName, address, phoneNo, cnic, about, occupation, closeTime, openTime)
+                    val lists = ModelHomeConsulteeTop(id,consultantImage,consultantName,clinicName, address, phoneNo, cnic, about, occupation,documentImage, closeTime, openTime)
                     allConsultants.add(lists)
                 }
 
