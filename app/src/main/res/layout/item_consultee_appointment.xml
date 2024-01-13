@@ -113,7 +113,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/poppins"
-            android:text="Barber Info"
+            android:text="Consultant Info"
             android:textColor="@color/white"
             android:textSize="18dp"
             android:textStyle="bold"
@@ -186,11 +186,11 @@
                 android:fontFamily="@font/poppins"
                 android:text="Update"
                 android:paddingVertical="10dp"
-                android:paddingHorizontal="10dp"
+                android:visibility="invisible"
+                android:paddingHorizontal="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_alignParentTop="true"
                 android:textStyle="bold"
-                android:visibility="invisible"
                 android:textColor="@color/white"
                 android:textSize="16dp"/>
 
