@@ -12,8 +12,11 @@ import android.view.ViewGroup
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import com.example.consultant.ContactUs
 import com.example.consultant.OnItemClick
+import com.example.consultant.PrivacyPolicy
 import com.example.consultant.R
+import com.example.consultant.TermsAndCondition
 import com.example.consultant.adapter_classes_consultee.AdapterHomeConsulteeBottom
 import com.example.consultant.adapter_classes_consultee.AdapterHomeConsulteeTop
 import com.example.consultant.consultee_activities.AllConsultantsActivity
@@ -74,6 +77,18 @@ class ConsulteeHomeFragment : Fragment() {
 
         binding?.tvMyAppintments?.setOnClickListener {
             val intent = Intent(requireContext(), VIewAppointmentsActivity::class.java)
+            startActivity(intent)
+        }
+        binding?.tvContactus?.setOnClickListener {
+            val intent = Intent(requireContext(), ContactUs::class.java)
+            startActivity(intent)
+        }
+        binding?.tvPrivacyPolicy?.setOnClickListener {
+            val intent = Intent(requireContext(), PrivacyPolicy::class.java)
+            startActivity(intent)
+        }
+        binding?.tvTermCondition?.setOnClickListener {
+            val intent = Intent(requireContext(), TermsAndCondition::class.java)
             startActivity(intent)
         }
 

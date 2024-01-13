@@ -454,7 +454,7 @@ choosePhotoOptions()
                 3 -> {
                     val imageUri = data?.data
                     binding?.ivDocument?.setImageURI(imageUri)
-                   
+
                 }
             }
         }
